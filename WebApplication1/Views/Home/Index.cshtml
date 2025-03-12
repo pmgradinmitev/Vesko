@@ -1,0 +1,56 @@
+﻿@model List<TrainingSession>
+@{
+    ViewData["Title"] = "Weekly Training Schedule";
+    DateTime startOfWeek = ViewBag.StartOfWeek;
+    int weekOffset = ViewBag.WeekOffset;
+}
+
+<div class="container mt-4">
+    <h2 class="mb-3">Weekly Training Schedule</h2>
+
+    <div class="d-flex justify-content-between mb-3">
+        <a class="btn btn-outline-primary" href="/Home/Index?weekOffset=@(weekOffset - 1)">← Previous Week</a>
+        <h4>@startOfWeek.ToString("MMM d") - @startOfWeek.AddDays(6).ToString("MMM d, yyyy")</h4>
+        <a class="btn btn-outline-primary" href="/Home/Index?weekOffset=@(weekOffset + 1)">Next Week →</a>
+    </div>
+
+    <a class="btn btn-primary mb-3" href="/Home/Create">Add New Session</a>
+
+    <table class="table table-bordered">
+        <thead class="table-dark">
+            <tr>
+                @for (int i = 0; i < 7; i++)
+                {
+                    <th>@startOfWeek.AddDays(i).ToString("dddd, MMM d")</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                @for (int i = 0; i < 7; i++)
+                {
+                    DateTime currentDate = startOfWeek.AddDays(i);
+                    var daySessions = Model.Where(s => s.Date.Date == currentDate.Date).ToList();
+
+                    <td>
+                        @if (daySessions.Any())
+                        {
+                            @foreach (var session in daySessions)
+                            {
+                                <div class="p-2 mb-2 bg-light border rounded">
+                                    <strong>@session.Title</strong><br>
+                                    <small>@session.Trainer</small><br>
+                                    <small>@session.Location</small>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <span class="text-muted">No Sessions</span>
+                        }
+                    </td>
+                }
+            </tr>
+        </tbody>
+    </table>
+</div>
